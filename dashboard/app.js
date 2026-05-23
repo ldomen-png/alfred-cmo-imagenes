@@ -107,7 +107,7 @@ function renderOffice() {
 
   for (const agent of STATE.agents) {
     const desk = agent.desk;
-    const charY = desk.y + 1; // personaje "sentado" debajo del desk
+    const charY = desk.y + 1; // personaje "sentado" un tile debajo del desk
     const charX = desk.x;
 
     const ch = document.createElement("div");
@@ -115,17 +115,9 @@ function renderOffice() {
     ch.dataset.estado = agent.estado;
     ch.dataset.id = agent.id;
     ch.title = `${agent.role} — ${LABELS_ESTADO[agent.estado] || agent.estado}`;
+    // Grid placement — el alignSelf/justifySelf:center viene de styles.css
     ch.style.gridColumn = charX + 1;
     ch.style.gridRow = charY + 1;
-    ch.style.alignSelf = "center";
-    ch.style.justifySelf = "center";
-
-    // Para que la animación de bounce funcione bien, position absolute relative al tile.
-    ch.style.position = "absolute";
-    const tileSize = 48;
-    ch.style.left = `${(charX + 0.5) * tileSize}px`;
-    ch.style.top = `${(charY + 0.5) * tileSize}px`;
-    ch.style.transform = "translate(-50%, -50%)";
 
     // Icon overlay
     const icon = document.createElement("span");
