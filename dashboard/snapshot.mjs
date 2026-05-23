@@ -131,11 +131,36 @@ function computarEstado(latest) {
   return "desconocido";
 }
 
+function normalizarIssue(issue) {
+  // Filtramos pull_request — los issues endpoint los devuelve también
+  if (issue.pull_request) return null;
+  return {
+    number: issue.number,
+    title: issue.title,
+    body: issue.body,
+    state: issue.state,
+    html_url: issue.html_url,
+    created_at: issue.created_at,
+    updated_at: issue.updated_at,
+    author: issue.user?.login,
+    labels: (issue.labels || []).map((l) => (typeof l === "string" ? l : l.name)),
+    comments: issue.comments,
+  };
+}
+
+function categorizar(issue) {
+  const labels = issue.labels || [];
+  if (labels.includes("changelog-alfred")) return "changelog";
+  if (labels.some((l) => l.startsWith("agent:"))) return "tarea";
+  if (labels.includes("cmo-agente")) return "agent-notification";
+  if (labels.some((l) => l.startsWith("reporte"))) return "brief";
+  return "otro";
+}
+
 function snapshot() {
   console.log(`[snapshot] consultando workflows de ${REPO}...`);
 
   const agentes = AGENTES.map((a) => {
-    // 5 últimas runs de este workflow
     const runs = ghApi(
       `/repos/${REPO}/actions/workflows/${a.workflow}/runs?per_page=5`
     );
@@ -144,7 +169,7 @@ function snapshot() {
     const estado = computarEstado(latest);
 
     console.log(
-      `  ${a.id.padEnd(20)} → ${estado.padEnd(20)} (${runsNorm.length} runs encontrados)`
+      `  ${a.id.padEnd(20)} → ${estado.padEnd(20)} (${runsNorm.length} runs)`
     );
 
     return {
@@ -155,10 +180,22 @@ function snapshot() {
     };
   });
 
+  // Issues recientes — feed para el dashboard
+  console.log(`\n[snapshot] consultando Issues recientes...`);
+  const issuesRaw = ghApi(
+    `/repos/${REPO}/issues?state=all&per_page=30&sort=updated&direction=desc`
+  );
+  const issues = (issuesRaw || [])
+    .map(normalizarIssue)
+    .filter(Boolean)
+    .map((i) => ({ ...i, categoria: categorizar(i) }));
+  console.log(`  ${issues.length} issues encontrados`);
+
   const state = {
     repo: REPO,
     generated_at: new Date().toISOString(),
     agents: agentes,
+    issues,
   };
 
   const outFile = path.join(__dirname, "state.json");

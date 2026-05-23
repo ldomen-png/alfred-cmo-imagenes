@@ -32,8 +32,24 @@
     </aside>
   </main>
 
+  <section class="issues-feed">
+    <div class="feed-header">
+      <h2>Feed</h2>
+      <div class="feed-filters" id="feed-filters">
+        <button class="filter-btn active" data-filter="all">Todo</button>
+        <button class="filter-btn" data-filter="changelog">📝 Changelog</button>
+        <button class="filter-btn" data-filter="brief">📊 Briefs</button>
+        <button class="filter-btn" data-filter="agent-notification">🔔 Notificaciones</button>
+        <button class="filter-btn" data-filter="tarea">📋 Tareas</button>
+      </div>
+    </div>
+    <ul id="issues-list" class="issues-list">
+      <li class="loading">cargando…</li>
+    </ul>
+  </section>
+
   <section class="feed">
-    <h2>Actividad reciente</h2>
+    <h2>Workflow runs (últimas 12)</h2>
     <ul id="activity-feed">
       <li class="loading">cargando…</li>
     </ul>

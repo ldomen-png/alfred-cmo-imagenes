@@ -40,6 +40,22 @@ const BUBBLES = {
 
 let STATE = null;
 let selectedAgentId = null;
+let activeFilter = "all";
+
+const CATEGORIA_ICON = {
+  changelog: "📝",
+  brief: "📊",
+  "agent-notification": "🔔",
+  tarea: "📋",
+  otro: "📦",
+};
+const CATEGORIA_LABEL = {
+  changelog: "Changelog Alfred",
+  brief: "Brief",
+  "agent-notification": "Notificación agente",
+  tarea: "Tarea",
+  otro: "Otro",
+};
 
 function tiempoRelativo(iso) {
   if (!iso) return "—";
@@ -232,6 +248,88 @@ function renderFeed() {
     .join("");
 }
 
+// ---------- Issues feed ----------
+
+function renderIssuesFeed() {
+  const ul = document.getElementById("issues-list");
+  if (!STATE?.issues) {
+    ul.innerHTML = `<li class="loading">sin datos</li>`;
+    return;
+  }
+
+  const filtered = STATE.issues.filter((i) => {
+    if (activeFilter === "all") return true;
+    return i.categoria === activeFilter;
+  });
+
+  if (filtered.length === 0) {
+    ul.innerHTML = `<li class="empty">
+      ${activeFilter === "all"
+        ? "El feed está vacío. Cuando los agentes publiquen notificaciones, cambios del repo Alfred lleguen, o se generen briefs — aparecerán aquí."
+        : `Sin items en categoría "${CATEGORIA_LABEL[activeFilter] || activeFilter}".`}
+    </li>`;
+    return;
+  }
+
+  ul.innerHTML = filtered.slice(0, 25).map(renderIssueCard).join("");
+
+  // Click → abrir en GitHub
+  ul.querySelectorAll(".issue-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const url = card.dataset.url;
+      if (url) window.open(url, "_blank");
+    });
+  });
+}
+
+function renderIssueCard(issue) {
+  const icon = CATEGORIA_ICON[issue.categoria] || CATEGORIA_ICON.otro;
+  const catLabel = CATEGORIA_LABEL[issue.categoria] || issue.categoria;
+  const riesgo = issue.labels.find((l) => l.startsWith("riesgo:"))?.split(":")[1];
+  const tipo = issue.labels.find((l) => l.startsWith("tipo:"))?.split(":")[1];
+
+  // Preview del body — quita markdown más común para legibilidad
+  const preview = (issue.body || "")
+    .replace(/^#+\s+/gm, "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\n+/g, " ")
+    .slice(0, 200);
+
+  return `
+    <li class="issue-card" data-cat="${issue.categoria}" data-url="${issue.html_url}">
+      <div class="issue-icon">${icon}</div>
+      <div class="issue-body">
+        <div class="issue-title">${escapeHtml(issue.title)}</div>
+        <div class="issue-meta">
+          <span class="badge">${catLabel}</span>
+          ${riesgo ? `<span class="badge riesgo-${riesgo}">riesgo: ${riesgo}</span>` : ""}
+          ${tipo ? `<span class="badge">${tipo}</span>` : ""}
+          <span class="badge estado-${issue.state}">${issue.state}</span>
+          <span>por ${issue.author}</span>
+          ${issue.comments > 0 ? `<span>💬 ${issue.comments}</span>` : ""}
+        </div>
+        ${preview ? `<div class="issue-preview">${escapeHtml(preview)}</div>` : ""}
+      </div>
+      <div class="issue-time">${tiempoRelativo(issue.updated_at)}</div>
+    </li>
+  `;
+}
+
+function escapeHtml(str) {
+  if (!str) return "";
+  return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// Listener de filtros
+document.querySelectorAll(".filter-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    activeFilter = btn.dataset.filter;
+    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    renderIssuesFeed();
+  });
+});
+
 // ---------- Snapshot loader ----------
 
 async function cargar() {
@@ -247,6 +345,7 @@ async function cargar() {
       `https://github.com/${STATE.repo}/actions`;
 
     renderOffice();
+    renderIssuesFeed();
     renderFeed();
     if (selectedAgentId) {
       const a = STATE.agents.find(x => x.id === selectedAgentId);

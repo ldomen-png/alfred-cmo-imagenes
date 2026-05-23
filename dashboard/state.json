@@ -1,6 +1,6 @@
 {
   "repo": "ldomen-png/alfred-cmo-agente",
-  "generated_at": "2026-05-23T23:15:59.346Z",
+  "generated_at": "2026-05-23T23:54:31.250Z",
   "agents": [
     {
       "id": "cmo-generador",
@@ -126,5 +126,6 @@
       "last_run": null,
       "latest_runs": []
     }
-  ]
+  ],
+  "issues": []
 }
