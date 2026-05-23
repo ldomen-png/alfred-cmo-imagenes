@@ -1,0 +1,130 @@
+{
+  "repo": "ldomen-png/alfred-cmo-agente",
+  "generated_at": "2026-05-23T23:15:59.346Z",
+  "agents": [
+    {
+      "id": "cmo-generador",
+      "workflow": "generar.yml",
+      "role": "CMO Generador",
+      "descripcion": "Diario L-V 8am CDMX — genera piezas de marketing",
+      "desk": {
+        "x": 1,
+        "y": 1
+      },
+      "sprite": "cmo",
+      "estado": "nunca-corrio",
+      "last_run": null,
+      "latest_runs": []
+    },
+    {
+      "id": "publisher",
+      "workflow": "publicar.yml",
+      "role": "Publisher",
+      "descripcion": "Diario L-V 10am CDMX — publica lo aprobado a Meta/LinkedIn",
+      "desk": {
+        "x": 3,
+        "y": 1
+      },
+      "sprite": "publisher",
+      "estado": "nunca-corrio",
+      "last_run": null,
+      "latest_runs": []
+    },
+    {
+      "id": "metricas-bot",
+      "workflow": "metricas.yml",
+      "role": "Métricas Bot",
+      "descripcion": "Diario 4pm CDMX — pulla counters Meta para aprendizaje",
+      "desk": {
+        "x": 5,
+        "y": 1
+      },
+      "sprite": "metricas",
+      "estado": "fresco-exitoso",
+      "last_run": {
+        "id": 26345786894,
+        "run_number": 1,
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-05-23T22:57:38Z",
+        "updated_at": "2026-05-23T22:57:58Z",
+        "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/26345786894",
+        "head_branch": "main",
+        "event": "schedule",
+        "actor": "ldomen-png",
+        "duration_seconds": 20
+      },
+      "latest_runs": [
+        {
+          "id": 26345786894,
+          "run_number": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-05-23T22:57:38Z",
+          "updated_at": "2026-05-23T22:57:58Z",
+          "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/26345786894",
+          "head_branch": "main",
+          "event": "schedule",
+          "actor": "ldomen-png",
+          "duration_seconds": 20
+        }
+      ]
+    },
+    {
+      "id": "cmo-autonomo",
+      "workflow": "cmo.yml",
+      "role": "CMO Autónomo",
+      "descripcion": "Workflow dispatch — agente CMO con tool use",
+      "desk": {
+        "x": 1,
+        "y": 3
+      },
+      "sprite": "cmo-auto",
+      "estado": "nunca-corrio",
+      "last_run": null,
+      "latest_runs": []
+    },
+    {
+      "id": "cro",
+      "workflow": "cro.yml",
+      "role": "CRO",
+      "descripcion": "Diario L-V 9am CDMX — revisa pipeline de sales",
+      "desk": {
+        "x": 3,
+        "y": 3
+      },
+      "sprite": "cro",
+      "estado": "nunca-corrio",
+      "last_run": null,
+      "latest_runs": []
+    },
+    {
+      "id": "brief-cmo",
+      "workflow": "brief-semanal.yml",
+      "role": "Brief CMO",
+      "descripcion": "Domingo 4pm CDMX — síntesis semanal CMO",
+      "desk": {
+        "x": 5,
+        "y": 3
+      },
+      "sprite": "brief-cmo",
+      "estado": "nunca-corrio",
+      "last_run": null,
+      "latest_runs": []
+    },
+    {
+      "id": "brief-cro",
+      "workflow": "brief-cro-semanal.yml",
+      "role": "Brief CRO",
+      "descripcion": "Domingo 5:30pm CDMX — síntesis semanal CRO + atribución",
+      "desk": {
+        "x": 7,
+        "y": 3
+      },
+      "sprite": "brief-cro",
+      "estado": "nunca-corrio",
+      "last_run": null,
+      "latest_runs": []
+    }
+  ]
+}

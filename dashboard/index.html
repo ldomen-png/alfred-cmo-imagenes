@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alfred Office — Dashboard CMO/CRO</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <span class="brand-mark">Alfred</span>
+      <span class="brand-divider"></span>
+      <span class="brand-sub">Office</span>
+    </div>
+    <div class="meta">
+      <span id="status-snapshot" class="meta-item">cargando…</span>
+      <span class="meta-divider"></span>
+      <button id="btn-refresh" class="meta-button" title="Refresh manual">↻</button>
+    </div>
+  </header>
+
+  <main class="office">
+    <div class="office-floor" id="office-floor">
+      <!-- Las características (decoración + agentes) se inyectan via JS -->
+    </div>
+    <aside class="office-side">
+      <div class="agent-detail" id="agent-detail">
+        <h3>Click un agente para ver detalle</h3>
+        <p class="hint">Cada personaje en la oficina representa un workflow de GitHub Actions. Su estado refleja la última ejecución.</p>
+      </div>
+    </aside>
+  </main>
+
+  <section class="feed">
+    <h2>Actividad reciente</h2>
+    <ul id="activity-feed">
+      <li class="loading">cargando…</li>
+    </ul>
+  </section>
+
+  <footer class="footer">
+    <span id="footer-repo"></span>
+    <span class="footer-sep">·</span>
+    <span>refresca cada 60s</span>
+    <span class="footer-sep">·</span>
+    <a id="footer-actions-link" href="#" target="_blank">Ver en GitHub Actions →</a>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
