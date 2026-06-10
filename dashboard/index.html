@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alfred Office — Dashboard CMO/CRO</title>
+  <title>Alfred · Control Room</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -11,49 +11,115 @@
     <div class="brand">
       <span class="brand-mark">Alfred</span>
       <span class="brand-divider"></span>
-      <span class="brand-sub">Office</span>
+      <span class="brand-sub">Control Room</span>
     </div>
     <div class="meta">
+      <span id="health-summary" class="meta-item">—</span>
+      <span class="meta-divider"></span>
       <span id="status-snapshot" class="meta-item">cargando…</span>
       <span class="meta-divider"></span>
       <button id="btn-refresh" class="meta-button" title="Refresh manual">↻</button>
     </div>
   </header>
 
-  <main class="office">
-    <div class="office-floor" id="office-floor">
-      <!-- Las características (decoración + agentes) se inyectan via JS -->
-    </div>
-    <aside class="office-side">
-      <div class="agent-detail" id="agent-detail">
-        <h3>Click un agente para ver detalle</h3>
-        <p class="hint">Cada personaje en la oficina representa un workflow de GitHub Actions. Su estado refleja la última ejecución.</p>
+  <main class="control-room">
+
+    <!-- Hero explicativo -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1 class="hero-title">El equipo autónomo de Alfred</h1>
+        <p class="hero-text">
+          Esta es la sala de control de los <strong>mayordomos digitales</strong> que trabajan
+          para Alfred 24/7. <strong>Jeeves</strong> dirige el marketing,
+          <strong>Hudson</strong> cuida el pipeline de ventas, <strong>Stevens</strong>
+          audita a Jeeves, <strong>Pennyworth</strong> traduce los cambios técnicos a humano,
+          <strong>Wadsworth</strong> revisa la UX, y <strong>Q</strong> (próximamente) hace R&D.
+        </p>
+        <p class="hero-text hero-text-sub">
+          <strong>Convención:</strong> los mayordomos 🎩 son los que tienen cerebro y deciden.
+          Pueden correr en distintos horarios — por eso ves "Jeeves · modo diario" y
+          "Jeeves · modo brief": es el mismo Jeeves en dos sesiones. Las herramientas
+          (📤 📊 📸) son scripts mecánicos sin LLM que los mayordomos orquestan.
+        </p>
+        <div class="hero-legend">
+          <span class="legend-item"><span class="legend-dot legend-ok"></span> Trabajando bien</span>
+          <span class="legend-item"><span class="legend-dot legend-busy"></span> En proceso ahora</span>
+          <span class="legend-item"><span class="legend-dot legend-warn"></span> Saltado o aún sin correr</span>
+          <span class="legend-item"><span class="legend-dot legend-err"></span> Falló — requiere atención</span>
+          <span class="legend-item"><span class="legend-dot legend-idle"></span> Descansando (corrió hace rato)</span>
+        </div>
       </div>
-    </aside>
+    </section>
+
+    <!-- Agentes agrupados por equipo -->
+    <section class="agents-section">
+      <div id="agent-groups" class="agent-groups">
+        <div class="loading">cargando…</div>
+      </div>
+    </section>
+
+    <!-- Mayordomos planeados (Q) -->
+    <section class="planeados-section">
+      <div class="group-header">
+        <h2 class="group-title">🔮 Planeados</h2>
+        <p class="group-desc">Mayordomos que están en el roadmap pero aún no se implementan. No reciben tareas todavía.</p>
+      </div>
+      <div id="planeados-grid" class="planeados-grid"></div>
+    </section>
+
+    <!-- Cola de piezas (afinación) -->
+    <section class="cola-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">📥 Cola de piezas</h2>
+          <p class="section-sub">Lo que Jeeves tiene en bandeja ahora mismo. <strong>Aprobado</strong>: pasó clasificador y Stevens, se publica en el siguiente cron de publicación. <strong>Pendiente</strong>: requiere revisión humana. <strong>Rechazado</strong>: archivado.</p>
+        </div>
+        <div class="feed-filters" id="cola-filters">
+          <button class="filter-btn active" data-cola-filter="all">Todas</button>
+          <button class="filter-btn" data-cola-filter="approved">✅ Aprobadas</button>
+          <button class="filter-btn" data-cola-filter="pendiente">⏳ Pendientes</button>
+          <button class="filter-btn" data-cola-filter="rejected">✗ Rechazadas</button>
+        </div>
+      </div>
+      <ul id="cola-list" class="cola-list">
+        <li class="loading">cargando…</li>
+      </ul>
+    </section>
+
+    <!-- Feed de notificaciones -->
+    <section class="issues-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">📨 Feed de notificaciones</h2>
+          <p class="section-sub">Lo que cada mayordomo le reportó al equipo: alertas, briefs semanales, cambios del producto, decisiones que requieren tu atención. Click en una para abrirla en GitHub.</p>
+        </div>
+        <div class="feed-filters" id="feed-filters">
+          <button class="filter-btn active" data-filter="all">Todo</button>
+          <button class="filter-btn" data-filter="changelog">📝 Cambios del producto</button>
+          <button class="filter-btn" data-filter="brief">📊 Briefs semanales</button>
+          <button class="filter-btn" data-filter="agent-notification">🔔 De los mayordomos</button>
+          <button class="filter-btn" data-filter="tarea">📋 Tareas</button>
+        </div>
+      </div>
+      <ul id="issues-list" class="issues-list">
+        <li class="loading">cargando…</li>
+      </ul>
+    </section>
+
+    <!-- Bitácora técnica (colapsada) -->
+    <section class="runs-section">
+      <details class="runs-details">
+        <summary>
+          <span class="section-title-inline">🛠 Bitácora técnica</span>
+          <span class="section-sub-inline">— Las últimas 15 ejecuciones de GitHub Actions. Útil para debug si algo falló. Si no eres técnico, ignora.</span>
+        </summary>
+        <ul id="activity-feed" class="runs-list">
+          <li class="loading">cargando…</li>
+        </ul>
+      </details>
+    </section>
+
   </main>
-
-  <section class="issues-feed">
-    <div class="feed-header">
-      <h2>Feed</h2>
-      <div class="feed-filters" id="feed-filters">
-        <button class="filter-btn active" data-filter="all">Todo</button>
-        <button class="filter-btn" data-filter="changelog">📝 Changelog</button>
-        <button class="filter-btn" data-filter="brief">📊 Briefs</button>
-        <button class="filter-btn" data-filter="agent-notification">🔔 Notificaciones</button>
-        <button class="filter-btn" data-filter="tarea">📋 Tareas</button>
-      </div>
-    </div>
-    <ul id="issues-list" class="issues-list">
-      <li class="loading">cargando…</li>
-    </ul>
-  </section>
-
-  <section class="feed">
-    <h2>Workflow runs (últimas 12)</h2>
-    <ul id="activity-feed">
-      <li class="loading">cargando…</li>
-    </ul>
-  </section>
 
   <footer class="footer">
     <span id="footer-repo"></span>

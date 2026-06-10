@@ -1,46 +1,45 @@
 // ============================================================================
-// Alfred Office — frontend JS. Lee state.json (snapshot de workflows) y
-// renderiza la oficina pixel con un personaje por agente. Click en cualquier
-// personaje muestra detalle. Refresca cada 60 segundos.
+// Alfred · Control Room — frontend
+// Renderiza la jerarquía equipo → mayordomo (modos + subagentes + herramientas)
+// + feed de issues + bitácora técnica colapsable.
 // ============================================================================
 
 const STATE_URL = "state.json";
 const REFRESH_MS = 60_000;
 
-// Iconos por rol (emoji = pragmático y reconocible sin sprites custom).
-const ICONOS = {
-  "cmo-generador": "✍️",
-  publisher: "📤",
-  "metricas-bot": "📊",
-  "cmo-autonomo": "🧠",
-  cro: "💼",
-  "brief-cmo": "📋",
-  "brief-cro": "📈",
-};
-
-// Etiquetas humanas para los estados.
-const LABELS_ESTADO = {
+const PILL_LABELS = {
   trabajando: "Trabajando",
-  "fresco-exitoso": "Fresco · OK",
+  "fresco-exitoso": "OK · fresco",
   exitoso: "OK",
-  descansando: "Descansando",
+  descansando: "Idle",
   fallido: "Falló",
   cancelado: "Cancelado",
-  saltado: "Saltado",
-  "nunca-corrio": "Nunca corrió",
-  desconocido: "Desconocido",
+  saltado: "Skipped",
+  "nunca-corrio": "Sin correr",
+  desconocido: "?",
   completado: "Completado",
 };
 
-const BUBBLES = {
-  trabajando: "...",
-  fallido: "¡error!",
-  "nunca-corrio": "zzz",
-};
+function estadoFraseCorta(estado, cron) {
+  switch (estado) {
+    case "fresco-exitoso": return "Acaba de correr · OK";
+    case "exitoso": return "Corrió hoy · OK";
+    case "descansando": return cron ? `Idle · próx ${cron}` : "Idle";
+    case "trabajando": return "Trabajando ahora…";
+    case "fallido": return "⚠️ Falló — revisa logs";
+    case "cancelado": return "Cancelado manual";
+    case "saltado": return "Skipped";
+    case "nunca-corrio": return cron ? `Sin correr · próx ${cron}` : "Sin correr";
+    default: return "Estado desconocido";
+  }
+}
 
-let STATE = null;
-let selectedAgentId = null;
-let activeFilter = "all";
+const HEALTH_GROUPS = {
+  ok: ["fresco-exitoso", "exitoso", "descansando"],
+  warn: ["cancelado", "saltado", "nunca-corrio"],
+  err: ["fallido"],
+  busy: ["trabajando"],
+};
 
 const CATEGORIA_ICON = {
   changelog: "📝",
@@ -50,12 +49,16 @@ const CATEGORIA_ICON = {
   otro: "📦",
 };
 const CATEGORIA_LABEL = {
-  changelog: "Changelog Alfred",
-  brief: "Brief",
-  "agent-notification": "Notificación agente",
+  changelog: "Cambio del producto",
+  brief: "Brief semanal",
+  "agent-notification": "Reporte de mayordomo",
   tarea: "Tarea",
   otro: "Otro",
 };
+
+let STATE = null;
+let activeFilter = "all";
+let colaFilter = "all";
 
 function tiempoRelativo(iso) {
   if (!iso) return "—";
@@ -78,174 +81,295 @@ function formatearDuracion(segundos) {
   return `${min}m${seg ? ` ${seg}s` : ""}`;
 }
 
-// ---------- Renderizado de la oficina ----------
+// ---------- Health summary ----------
 
-const COLS = 11;
-const ROWS = 7;
+function renderHealth() {
+  const el = document.getElementById("health-summary");
+  if (!STATE?.equipos) { el.textContent = "—"; return; }
 
-// Layout estático de tiles: '.' floor, 'D' desk, 'P' plant, 'A' floor-alt (variación).
-const OFFICE_LAYOUT = [
-  "...........",  // row 0
-  ".D.D.D.....",  // row 1 - 3 desks arriba
-  "...........",  // row 2
-  ".D.D.D.D.P.",  // row 3 - 4 desks abajo + planta
-  "...........",  // row 4
-  ".P.......P.",  // row 5 - plantas en esquinas
-  "...........",  // row 6
-];
-
-function renderOffice() {
-  const floor = document.getElementById("office-floor");
-  floor.style.setProperty("--cols", COLS);
-  floor.style.setProperty("--rows", ROWS);
-  floor.innerHTML = "";
-
-  // Tiles
-  for (let y = 0; y < ROWS; y++) {
-    for (let x = 0; x < COLS; x++) {
-      const char = OFFICE_LAYOUT[y]?.[x] || ".";
-      const div = document.createElement("div");
-      div.className = "tile";
-      switch (char) {
-        case "D": div.classList.add("tile-desk"); break;
-        case "P": div.classList.add("tile-plant"); break;
-        case "A": div.classList.add("tile-floor-alt"); break;
-        default: div.classList.add((x + y) % 2 ? "tile-floor-alt" : "tile-floor");
-      }
-      div.style.gridColumn = x + 1;
-      div.style.gridRow = y + 1;
-      floor.appendChild(div);
+  // Agregamos TODOS los estados (modos + herramientas + sueltas) para el health.
+  const estados = [];
+  for (const eq of STATE.equipos) {
+    for (const m of eq.mayordomos || []) {
+      for (const md of m.modos || []) estados.push(md.estado);
+      for (const h of m.herramientas || []) estados.push(h.estado);
     }
+    for (const h of eq.herramientas_sueltas || []) estados.push(h.estado);
   }
 
-  // Characters (uno por agente, posicionado en su desk + 1 fila abajo)
-  if (!STATE?.agents) return;
-
-  for (const agent of STATE.agents) {
-    const desk = agent.desk;
-    const charY = desk.y + 1; // personaje "sentado" un tile debajo del desk
-    const charX = desk.x;
-
-    const ch = document.createElement("div");
-    ch.className = "character";
-    ch.dataset.estado = agent.estado;
-    ch.dataset.id = agent.id;
-    ch.title = `${agent.role} — ${LABELS_ESTADO[agent.estado] || agent.estado}`;
-    // Grid placement — el alignSelf/justifySelf:center viene de styles.css
-    ch.style.gridColumn = charX + 1;
-    ch.style.gridRow = charY + 1;
-
-    // Icon overlay
-    const icon = document.createElement("span");
-    icon.className = "character-icon";
-    icon.textContent = ICONOS[agent.id] || "🤖";
-    ch.appendChild(icon);
-
-    // Speech bubble si aplica
-    if (BUBBLES[agent.estado]) {
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = BUBBLES[agent.estado];
-      ch.appendChild(bubble);
-    }
-
-    // Label
-    const label = document.createElement("div");
-    label.className = "character-label";
-    label.textContent = agent.role.split(" ").slice(0, 2).join(" ");
-    ch.appendChild(label);
-
-    if (selectedAgentId === agent.id) ch.classList.add("selected");
-
-    ch.addEventListener("click", () => {
-      selectedAgentId = agent.id;
-      renderOffice();
-      renderDetail(agent);
-    });
-
-    floor.appendChild(ch);
+  const conteo = { ok: 0, warn: 0, err: 0, busy: 0 };
+  for (const e of estados) {
+    if (HEALTH_GROUPS.ok.includes(e)) conteo.ok++;
+    else if (HEALTH_GROUPS.warn.includes(e)) conteo.warn++;
+    else if (HEALTH_GROUPS.err.includes(e)) conteo.err++;
+    else if (HEALTH_GROUPS.busy.includes(e)) conteo.busy++;
   }
+
+  const partes = [];
+  if (conteo.ok) partes.push(`<span class="h-ok">${conteo.ok} ✓ bien</span>`);
+  if (conteo.busy) partes.push(`<span>${conteo.busy} ⟳ activos</span>`);
+  if (conteo.warn) partes.push(`<span class="h-warn">${conteo.warn} ⚠ por correr</span>`);
+  if (conteo.err) partes.push(`<span class="h-err">${conteo.err} ✗ fallaron</span>`);
+  el.innerHTML = partes.join(" · ") || "—";
 }
 
-// ---------- Sidebar de detalle ----------
+// ---------- Equipos ----------
 
-function renderDetail(agent) {
-  const el = document.getElementById("agent-detail");
-  if (!agent) {
-    el.innerHTML = `<h3>Click un agente para ver detalle</h3>
-      <p class="hint">Cada personaje en la oficina representa un workflow de GitHub Actions. Su estado refleja la última ejecución.</p>`;
+function renderEquipos() {
+  const wrap = document.getElementById("agent-groups");
+  if (!STATE?.equipos) {
+    wrap.innerHTML = `<div class="loading">sin datos</div>`;
     return;
   }
 
-  const last = agent.last_run;
-  const recent = (agent.latest_runs || []).slice(0, 5);
+  wrap.innerHTML = STATE.equipos.map(renderEquipo).join("");
+}
 
-  el.innerHTML = `
-    <h3>${agent.role}</h3>
-    <p class="role">${agent.descripcion}</p>
-    <span class="estado-badge" data-estado="${agent.estado}">${LABELS_ESTADO[agent.estado] || agent.estado}</span>
-    ${last ? `
-      <table>
-        <tr><td>Workflow</td><td><code>${agent.workflow}</code></td></tr>
-        <tr><td>Última run</td><td>${tiempoRelativo(last.updated_at)}</td></tr>
-        <tr><td>Disparada por</td><td>${last.event}${last.actor ? ` (${last.actor})` : ""}</td></tr>
-        <tr><td>Conclusión</td><td>${last.conclusion || last.status}</td></tr>
-        <tr><td>Duración</td><td>${formatearDuracion(last.duration_seconds)}</td></tr>
-        <tr><td>Branch</td><td>${last.head_branch}</td></tr>
-        <tr><td>Run #</td><td><a class="run-link" href="${last.html_url}" target="_blank">${last.run_number} →</a></td></tr>
-      </table>
-    ` : `<p class="hint">Sin runs registradas todavía.</p>`}
-    ${recent.length > 1 ? `
-      <div class="recent-runs">
-        <h4>Últimas ${recent.length} runs</h4>
-        <ul>
-          ${recent.map(r => `
-            <li>
-              <span style="color: var(--text-soft);">${tiempoRelativo(r.updated_at)}</span> ·
-              <span class="conclusion-${r.conclusion || "none"}">${r.conclusion || r.status}</span> ·
-              <a class="run-link" href="${r.html_url}" target="_blank">#${r.run_number}</a>
-              ${r.duration_seconds != null ? ` · ${formatearDuracion(r.duration_seconds)}` : ""}
-            </li>
-          `).join("")}
-        </ul>
+function renderEquipo(eq) {
+  const mayordomos = (eq.mayordomos || []).map(renderMayordomoCard).join("");
+  const sueltas = (eq.herramientas_sueltas || []).map(renderHerramientaCard).join("");
+  return `
+    <div class="agent-group">
+      <div class="group-header">
+        <h2 class="group-title">${eq.titulo}</h2>
+        ${eq.descripcion ? `<p class="group-desc">${escapeHtml(eq.descripcion)}</p>` : ""}
       </div>
-    ` : ""}
+      <div class="agents-grid">${mayordomos}${sueltas}</div>
+    </div>
   `;
 }
 
-// ---------- Activity feed ----------
+function renderMayordomoCard(m) {
+  const ghUrl = `https://github.com/${m.repo}/actions`;
 
-function renderFeed() {
-  const ul = document.getElementById("activity-feed");
-  if (!STATE?.agents) {
+  const modosHtml = m.modos.map((md) => {
+    // Si nunca corrió, solo mostramos el cron + pill (no duplicamos "sin correr")
+    const ultimaTxt = md.last_run ? `corrió ${tiempoRelativo(md.last_run.updated_at)}` : null;
+    return `
+      <div class="modo-row" data-estado="${md.estado}">
+        <div class="modo-titulo">
+          <span class="dot-estado dot-${classOf(md.estado)}"></span>
+          <span>${escapeHtml(md.titulo)}</span>
+        </div>
+        <div class="modo-meta">
+          <span class="mono">${escapeHtml(md.cron_human)}</span>
+          ${ultimaTxt ? `<span class="modo-ultima">· ${ultimaTxt}</span>` : ""}
+          <span class="status-pill compact" data-estado="${md.estado}">${PILL_LABELS[md.estado] || md.estado}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  const subagentesHtml = (m.subagentes || []).length ? `
+    <div class="sub-section">
+      <div class="sub-label">Subagente embebido</div>
+      ${m.subagentes.map((s) => `
+        <div class="subagente-row" data-estado="${s.estado}">
+          <div class="subagente-head">
+            <span class="subagente-avatar">${s.avatar || "🎩"}</span>
+            <span class="subagente-nombre">${escapeHtml(s.nombre)}</span>
+            <span class="status-pill compact subagente-pill">corre dentro de ${escapeHtml(m.nombre)}</span>
+          </div>
+          <p class="subagente-desc">${escapeHtml(s.rol)}. ${escapeHtml(s.descripcion)}</p>
+        </div>
+      `).join("")}
+    </div>
+  ` : "";
+
+  const herramientasHtml = (m.herramientas || []).length ? `
+    <div class="sub-section">
+      <div class="sub-label">Herramientas que orquesta</div>
+      ${m.herramientas.map((h) => `
+        <div class="herramienta-row" data-estado="${h.estado}">
+          <span class="herramienta-avatar">${h.avatar}</span>
+          <div class="herramienta-info">
+            <div class="herramienta-nombre">${escapeHtml(h.nombre)}</div>
+            <div class="herramienta-desc">${escapeHtml(h.descripcion)}</div>
+          </div>
+          <div class="herramienta-meta">
+            <span class="mono">${escapeHtml(h.cron_human)}</span>
+            <span class="status-pill compact" data-estado="${h.estado}">${PILL_LABELS[h.estado] || h.estado}</span>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  ` : "";
+
+  return `
+    <div class="mayordomo-card" data-estado="${m.estado_general}">
+      <div class="mayordomo-head">
+        <div class="mayordomo-identity">
+          <div class="mayordomo-avatar">${m.avatar}</div>
+          <div>
+            <h3 class="mayordomo-name">${escapeHtml(m.nombre)}</h3>
+            <div class="mayordomo-rol">${escapeHtml(m.rol)}</div>
+          </div>
+        </div>
+        <span class="status-pill" data-estado="${m.estado_general}">${PILL_LABELS[m.estado_general] || m.estado_general}</span>
+      </div>
+
+      <p class="mayordomo-desc">${escapeHtml(m.descripcion)}</p>
+
+      <div class="sub-section">
+        <div class="sub-label">Modos de operación</div>
+        ${modosHtml}
+      </div>
+
+      ${subagentesHtml}
+      ${herramientasHtml}
+
+      <a class="mayordomo-link" href="${ghUrl}" target="_blank">ver corridas de ${escapeHtml(m.nombre)} en GitHub →</a>
+    </div>
+  `;
+}
+
+// Herramienta suelta (no orquestada por un mayordomo).
+function renderHerramientaCard(h) {
+  const ghUrl = `https://github.com/${h.repo}/actions/workflows/${h.workflow}`;
+  return `
+    <div class="mayordomo-card herramienta-card" data-estado="${h.estado}">
+      <div class="mayordomo-head">
+        <div class="mayordomo-identity">
+          <div class="mayordomo-avatar herramienta-avatar-big">${h.avatar}</div>
+          <div>
+            <h3 class="mayordomo-name">${escapeHtml(h.nombre)}</h3>
+            <div class="mayordomo-rol"><span class="tipo-badge tipo-herramienta">herramienta</span> ${escapeHtml(h.cron_human)}</div>
+          </div>
+        </div>
+        <span class="status-pill" data-estado="${h.estado}">${PILL_LABELS[h.estado] || h.estado}</span>
+      </div>
+      <p class="mayordomo-desc">${escapeHtml(h.descripcion)}</p>
+      <div class="suelta-narrative">${escapeHtml(estadoFraseCorta(h.estado, h.cron_human))}</div>
+      <a class="mayordomo-link" href="${ghUrl}" target="_blank">ver corridas en GitHub →</a>
+    </div>
+  `;
+}
+
+function classOf(estado) {
+  if (HEALTH_GROUPS.ok.includes(estado)) return "ok";
+  if (HEALTH_GROUPS.busy.includes(estado)) return "busy";
+  if (HEALTH_GROUPS.warn.includes(estado)) return "warn";
+  if (HEALTH_GROUPS.err.includes(estado)) return "err";
+  return "idle";
+}
+
+// ---------- Mayordomos planeados (Q) ----------
+
+function renderPlaneados() {
+  const wrap = document.getElementById("planeados-grid");
+  const section = document.querySelector(".planeados-section");
+  if (!STATE?.mayordomos_planeados?.length) {
+    wrap.innerHTML = "";
+    if (section) section.style.display = "none";
+    return;
+  }
+  if (section) section.style.display = "";
+  wrap.innerHTML = STATE.mayordomos_planeados.map((p) => `
+    <div class="planeado-card">
+      <div class="mayordomo-head">
+        <div class="mayordomo-identity">
+          <div class="mayordomo-avatar">${p.avatar}</div>
+          <div>
+            <h3 class="mayordomo-name">${escapeHtml(p.nombre)}</h3>
+            <div class="mayordomo-rol">${escapeHtml(p.rol)}</div>
+          </div>
+        </div>
+        <span class="status-pill externo-pill-warn">Planeado</span>
+      </div>
+      <p class="mayordomo-desc">${escapeHtml(p.descripcion)}</p>
+      <div class="suelta-narrative">📍 ${escapeHtml(p.ubicacion)}</div>
+    </div>
+  `).join("");
+}
+
+// ---------- Cola de piezas ----------
+
+function renderCola() {
+  const ul = document.getElementById("cola-list");
+  if (!STATE?.piezas_cola) {
     ul.innerHTML = `<li class="loading">sin datos</li>`;
     return;
   }
 
-  // Flatten todas las runs, ordenar por fecha desc, tomar 12.
-  const todas = [];
-  for (const a of STATE.agents) {
-    for (const r of a.latest_runs || []) {
-      todas.push({ ...r, agent_role: a.role, agent_id: a.id });
-    }
-  }
-  todas.sort((x, y) => new Date(y.updated_at) - new Date(x.updated_at));
-  const top = todas.slice(0, 12);
+  const piezas = STATE.piezas_cola.filter((p) => {
+    if (colaFilter === "all") return true;
+    return p.estado === colaFilter;
+  });
 
-  if (top.length === 0) {
-    ul.innerHTML = `<li class="loading">aún no hay actividad</li>`;
+  if (piezas.length === 0) {
+    ul.innerHTML = `<li class="empty">
+      ${colaFilter === "all"
+        ? "Bandeja vacía. Cuando Jeeves corra, sus piezas aparecerán aquí."
+        : `Sin piezas en estado "${colaFilter}".`}
+    </li>`;
     return;
   }
 
-  ul.innerHTML = top
-    .map(r => `
-      <li>
-        <span class="time">${tiempoRelativo(r.updated_at)}</span>
-        <span><span class="agent">${r.agent_role}</span> · <span class="conclusion-${r.conclusion || "none"}">${r.conclusion || r.status}</span> · <a href="${r.html_url}" target="_blank" style="color: var(--text-soft); text-decoration: none;">#${r.run_number}</a></span>
-        <span class="time">${formatearDuracion(r.duration_seconds)}</span>
-      </li>
-    `)
-    .join("");
+  ul.innerHTML = piezas.map(renderPiezaCard).join("");
+
+  ul.querySelectorAll(".pieza-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      card.classList.toggle("expanded");
+    });
+  });
+}
+
+function renderPiezaCard(p) {
+  const estadoLabel = {
+    approved: "✅ Aprobada — se publica próximo cron",
+    pendiente: "⏳ Pendiente — requiere revisión",
+    rejected: "✗ Rechazada",
+    published: "📤 Publicada",
+  }[p.estado] || p.estado;
+
+  const meta = [
+    p.red,
+    p.formato,
+    p.etapa_funnel,
+    p.vertical && p.vertical !== "generico" ? p.vertical : null,
+    p.template_visual && p.template_visual !== "standard" ? p.template_visual : null,
+  ].filter(Boolean);
+
+  const clasificador = p.clasificador
+    ? `<span class="badge ${p.clasificador.auto_aprobable ? "estado-open" : ""}">Clasificador: ${p.clasificador.auto_aprobable ? "OK" : `${p.clasificador.blocking} blocking, ${p.clasificador.warnings} warn`}</span>`
+    : "";
+
+  const degradado = p.degradado_por
+    ? `<div class="pieza-alerta">⚠️ Degradada por ${p.degradado_por}: ${escapeHtml(p.degradado_motivo)}</div>`
+    : "";
+
+  const rechazo = p.rechazo_motivo
+    ? `<div class="pieza-alerta">Rechazo: ${escapeHtml(p.rechazo_motivo)}</div>`
+    : "";
+
+  return `
+    <li class="pieza-card" data-estado="${p.estado}">
+      <div class="pieza-head">
+        <div class="pieza-id-row">
+          <span class="pieza-id">${escapeHtml(p.id)}</span>
+          <span class="pieza-meta-pills">
+            ${meta.map(m => `<span class="badge">${escapeHtml(m)}</span>`).join("")}
+            ${clasificador}
+          </span>
+        </div>
+        <span class="pieza-estado" data-estado="${p.estado}">${estadoLabel}</span>
+      </div>
+
+      <div class="pieza-celda-angulo">
+        <span class="stat-mini-label">Celda:</span> <span class="stat-mini-value">${escapeHtml(p.celda)}</span>
+        <span class="stat-mini-label" style="margin-left:12px;">Ángulo:</span> <span class="stat-mini-value">${escapeHtml(p.angulo)}</span>
+      </div>
+
+      ${p.headline_imagen ? `<div class="pieza-headline">"${escapeHtml(p.headline_imagen)}"</div>` : ""}
+
+      <div class="pieza-copy">${escapeHtml(p.copy_preview)}${p.copy_preview.length >= 280 ? "…" : ""}</div>
+
+      ${p.imagen_url ? `<a href="${p.imagen_url}" target="_blank" class="pieza-img-link">🖼 Ver imagen</a>` : ""}
+
+      ${degradado}
+      ${rechazo}
+    </li>
+  `;
 }
 
 // ---------- Issues feed ----------
@@ -265,7 +389,7 @@ function renderIssuesFeed() {
   if (filtered.length === 0) {
     ul.innerHTML = `<li class="empty">
       ${activeFilter === "all"
-        ? "El feed está vacío. Cuando los agentes publiquen notificaciones, cambios del repo Alfred lleguen, o se generen briefs — aparecerán aquí."
+        ? "Sin notificaciones todavía. Cuando los mayordomos reporten algo (briefs, alertas, cambios), aparecerán aquí."
         : `Sin items en categoría "${CATEGORIA_LABEL[activeFilter] || activeFilter}".`}
     </li>`;
     return;
@@ -273,7 +397,6 @@ function renderIssuesFeed() {
 
   ul.innerHTML = filtered.slice(0, 25).map(renderIssueCard).join("");
 
-  // Click → abrir en GitHub
   ul.querySelectorAll(".issue-card").forEach((card) => {
     card.addEventListener("click", () => {
       const url = card.dataset.url;
@@ -288,7 +411,6 @@ function renderIssueCard(issue) {
   const riesgo = issue.labels.find((l) => l.startsWith("riesgo:"))?.split(":")[1];
   const tipo = issue.labels.find((l) => l.startsWith("tipo:"))?.split(":")[1];
 
-  // Preview del body — quita markdown más común para legibilidad
   const preview = (issue.body || "")
     .replace(/^#+\s+/gm, "")
     .replace(/\*\*([^*]+)\*\*/g, "$1")
@@ -305,7 +427,7 @@ function renderIssueCard(issue) {
           <span class="badge">${catLabel}</span>
           ${riesgo ? `<span class="badge riesgo-${riesgo}">riesgo: ${riesgo}</span>` : ""}
           ${tipo ? `<span class="badge">${tipo}</span>` : ""}
-          <span class="badge estado-${issue.state}">${issue.state}</span>
+          <span class="badge estado-${issue.state}">${issue.state === "open" ? "abierto" : "cerrado"}</span>
           <span>por ${issue.author}</span>
           ${issue.comments > 0 ? `<span>💬 ${issue.comments}</span>` : ""}
         </div>
@@ -316,17 +438,90 @@ function renderIssueCard(issue) {
   `;
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// ---------- Workflow runs feed (bitácora técnica) ----------
+
+function renderRunsFeed() {
+  const ul = document.getElementById("activity-feed");
+  if (!STATE?.equipos) {
+    ul.innerHTML = `<li class="loading">sin datos</li>`;
+    return;
+  }
+
+  const todas = [];
+  for (const eq of STATE.equipos) {
+    for (const m of eq.mayordomos || []) {
+      for (const md of m.modos || []) {
+        for (const r of md.latest_runs || []) {
+          todas.push({ ...r, agent_role: `${m.nombre} (${md.titulo})` });
+        }
+      }
+      for (const h of m.herramientas || []) {
+        for (const r of h.latest_runs || []) {
+          todas.push({ ...r, agent_role: h.nombre });
+        }
+      }
+    }
+    for (const h of eq.herramientas_sueltas || []) {
+      for (const r of h.latest_runs || []) {
+        todas.push({ ...r, agent_role: h.nombre });
+      }
+    }
+  }
+  todas.sort((x, y) => new Date(y.updated_at) - new Date(x.updated_at));
+  const top = todas.slice(0, 15);
+
+  if (top.length === 0) {
+    ul.innerHTML = `<li class="loading">aún no hay actividad</li>`;
+    return;
+  }
+
+  ul.innerHTML = top
+    .map(r => `
+      <li>
+        <span class="time">${tiempoRelativo(r.updated_at)}</span>
+        <span class="agent">${escapeHtml(r.agent_role)}</span>
+        <span class="conclusion-${r.conclusion || r.status}">${conclusionHumana(r)}</span>
+        <span class="duration">${formatearDuracion(r.duration_seconds)} · <a href="${r.html_url}" target="_blank" class="run-link">#${r.run_number}</a></span>
+      </li>
+    `)
+    .join("");
 }
 
-// Listener de filtros
-document.querySelectorAll(".filter-btn").forEach((btn) => {
+function conclusionHumana(r) {
+  const c = r.conclusion || r.status;
+  switch (c) {
+    case "success": return "✓ ok";
+    case "failure": return "✗ falló";
+    case "cancelled": return "cancelado";
+    case "skipped": return "skip";
+    case "in_progress": return "corriendo…";
+    case "queued": return "en cola";
+    default: return c;
+  }
+}
+
+// ---------- Utils ----------
+
+function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---------- Filters ----------
+
+document.querySelectorAll("#feed-filters .filter-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
     activeFilter = btn.dataset.filter;
-    document.querySelectorAll(".filter-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    document.querySelectorAll("#feed-filters .filter-btn").forEach((b) => b.classList.toggle("active", b === btn));
     renderIssuesFeed();
+  });
+});
+
+document.querySelectorAll("#cola-filters .filter-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    colaFilter = btn.dataset.colaFilter;
+    document.querySelectorAll("#cola-filters .filter-btn").forEach((b) => b.classList.toggle("active", b === btn));
+    renderCola();
   });
 });
 
@@ -344,13 +539,12 @@ async function cargar() {
     document.getElementById("footer-actions-link").href =
       `https://github.com/${STATE.repo}/actions`;
 
-    renderOffice();
+    renderHealth();
+    renderEquipos();
+    renderPlaneados();
+    renderCola();
     renderIssuesFeed();
-    renderFeed();
-    if (selectedAgentId) {
-      const a = STATE.agents.find(x => x.id === selectedAgentId);
-      if (a) renderDetail(a);
-    }
+    renderRunsFeed();
   } catch (e) {
     document.getElementById("status-snapshot").textContent = `error: ${e.message}`;
   }
