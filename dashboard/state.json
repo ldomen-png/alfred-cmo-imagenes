@@ -1,6 +1,6 @@
 {
   "repo": "ldomen-png/alfred-cmo-agente",
-  "generated_at": "2026-06-15T22:31:47.532Z",
+  "generated_at": "2026-06-16T00:15:31.183Z",
   "equipos": [
     {
       "grupo": "marketing",
@@ -109,7 +109,7 @@
               "workflow": "brief-semanal.yml",
               "repo": "ldomen-png/alfred-cmo-agente",
               "cron_human": "Domingo 16:00 CDMX",
-              "estado": "exitoso",
+              "estado": "descansando",
               "last_run": {
                 "id": 27515668228,
                 "run_number": 4,
@@ -312,7 +312,7 @@
               "descripcion": "Pulla likes, comentarios, alcance de Meta.",
               "repo": "ldomen-png/alfred-cmo-agente",
               "cron_human": "Diario 16:00 CDMX",
-              "estado": "exitoso",
+              "estado": "descansando",
               "last_run": {
                 "id": 27515986223,
                 "run_number": 23,
@@ -695,13 +695,13 @@
           "cron_human": "Cada 15 minutos",
           "estado": "trabajando",
           "last_run": {
-            "id": 27580725821,
-            "run_number": 225,
+            "id": 27585117581,
+            "run_number": 226,
             "status": "in_progress",
             "conclusion": null,
-            "created_at": "2026-06-15T22:31:31Z",
-            "updated_at": "2026-06-15T22:31:34Z",
-            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27580725821",
+            "created_at": "2026-06-16T00:15:13Z",
+            "updated_at": "2026-06-16T00:15:18Z",
+            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27585117581",
             "head_branch": "main",
             "event": "schedule",
             "actor": "ldomen-png",
@@ -709,17 +709,30 @@
           },
           "latest_runs": [
             {
-              "id": 27580725821,
-              "run_number": 225,
+              "id": 27585117581,
+              "run_number": 226,
               "status": "in_progress",
               "conclusion": null,
-              "created_at": "2026-06-15T22:31:31Z",
-              "updated_at": "2026-06-15T22:31:34Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27580725821",
+              "created_at": "2026-06-16T00:15:13Z",
+              "updated_at": "2026-06-16T00:15:18Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27585117581",
               "head_branch": "main",
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": null
+            },
+            {
+              "id": 27580725821,
+              "run_number": 225,
+              "status": "completed",
+              "conclusion": "success",
+              "created_at": "2026-06-15T22:31:31Z",
+              "updated_at": "2026-06-15T22:31:51Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27580725821",
+              "head_branch": "main",
+              "event": "schedule",
+              "actor": "ldomen-png",
+              "duration_seconds": 20
             },
             {
               "id": 27573695094,
@@ -755,19 +768,6 @@
               "created_at": "2026-06-15T11:36:18Z",
               "updated_at": "2026-06-15T11:36:37Z",
               "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27543508463",
-              "head_branch": "main",
-              "event": "schedule",
-              "actor": "ldomen-png",
-              "duration_seconds": 19
-            },
-            {
-              "id": 27526440315,
-              "run_number": 221,
-              "status": "completed",
-              "conclusion": "success",
-              "created_at": "2026-06-15T05:41:23Z",
-              "updated_at": "2026-06-15T05:41:42Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/27526440315",
               "head_branch": "main",
               "event": "schedule",
               "actor": "ldomen-png",
