@@ -1,6 +1,6 @@
 {
   "repo": "ldomen-png/alfred-cmo-agente",
-  "generated_at": "2026-06-28T17:47:17.082Z",
+  "generated_at": "2026-06-28T18:55:58.243Z",
   "equipos": [
     {
       "grupo": "marketing",
@@ -721,13 +721,13 @@
           "cron_human": "Cada 15 minutos",
           "estado": "trabajando",
           "last_run": {
-            "id": 28330733808,
-            "run_number": 345,
+            "id": 28332559375,
+            "run_number": 346,
             "status": "in_progress",
             "conclusion": null,
-            "created_at": "2026-06-28T17:47:02Z",
-            "updated_at": "2026-06-28T17:47:05Z",
-            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/28330733808",
+            "created_at": "2026-06-28T18:55:38Z",
+            "updated_at": "2026-06-28T18:55:41Z",
+            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/28332559375",
             "head_branch": "main",
             "event": "schedule",
             "actor": "ldomen-png",
@@ -735,17 +735,30 @@
           },
           "latest_runs": [
             {
-              "id": 28330733808,
-              "run_number": 345,
+              "id": 28332559375,
+              "run_number": 346,
               "status": "in_progress",
               "conclusion": null,
-              "created_at": "2026-06-28T17:47:02Z",
-              "updated_at": "2026-06-28T17:47:05Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/28330733808",
+              "created_at": "2026-06-28T18:55:38Z",
+              "updated_at": "2026-06-28T18:55:41Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/28332559375",
               "head_branch": "main",
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": null
+            },
+            {
+              "id": 28330733808,
+              "run_number": 345,
+              "status": "completed",
+              "conclusion": "success",
+              "created_at": "2026-06-28T17:47:02Z",
+              "updated_at": "2026-06-28T17:47:21Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/28330733808",
+              "head_branch": "main",
+              "event": "schedule",
+              "actor": "ldomen-png",
+              "duration_seconds": 19
             },
             {
               "id": 28328435117,
@@ -785,19 +798,6 @@
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": 26
-            },
-            {
-              "id": 28320722523,
-              "run_number": 341,
-              "status": "completed",
-              "conclusion": "success",
-              "created_at": "2026-06-28T11:28:03Z",
-              "updated_at": "2026-06-28T11:28:28Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/28320722523",
-              "head_branch": "main",
-              "event": "schedule",
-              "actor": "ldomen-png",
-              "duration_seconds": 25
             }
           ]
         },
