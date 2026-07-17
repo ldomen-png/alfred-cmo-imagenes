@@ -1,6 +1,6 @@
 {
   "repo": "ldomen-png/alfred-cmo-agente",
-  "generated_at": "2026-07-17T16:52:50.720Z",
+  "generated_at": "2026-07-17T18:12:53.912Z",
   "equipos": [
     {
       "grupo": "marketing",
@@ -235,21 +235,34 @@
               "descripcion": "Manda las piezas aprobadas a Meta y LinkedIn.",
               "repo": "ldomen-png/alfred-cmo-agente",
               "cron_human": "L-V 10:00 CDMX",
-              "estado": "exitoso",
+              "estado": "fresco-exitoso",
               "last_run": {
-                "id": 29520880622,
-                "run_number": 65,
+                "id": 29600537181,
+                "run_number": 66,
                 "status": "completed",
                 "conclusion": "success",
-                "created_at": "2026-07-16T17:42:30Z",
-                "updated_at": "2026-07-16T17:45:16Z",
-                "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29520880622",
+                "created_at": "2026-07-17T17:33:56Z",
+                "updated_at": "2026-07-17T17:36:31Z",
+                "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29600537181",
                 "head_branch": "main",
                 "event": "schedule",
                 "actor": "ldomen-png",
-                "duration_seconds": 166
+                "duration_seconds": 155
               },
               "latest_runs": [
+                {
+                  "id": 29600537181,
+                  "run_number": 66,
+                  "status": "completed",
+                  "conclusion": "success",
+                  "created_at": "2026-07-17T17:33:56Z",
+                  "updated_at": "2026-07-17T17:36:31Z",
+                  "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29600537181",
+                  "head_branch": "main",
+                  "event": "schedule",
+                  "actor": "ldomen-png",
+                  "duration_seconds": 155
+                },
                 {
                   "id": 29520880622,
                   "run_number": 65,
@@ -301,19 +314,6 @@
                   "event": "schedule",
                   "actor": "ldomen-png",
                   "duration_seconds": 150
-                },
-                {
-                  "id": 29268503211,
-                  "run_number": 61,
-                  "status": "completed",
-                  "conclusion": "success",
-                  "created_at": "2026-07-13T16:57:14Z",
-                  "updated_at": "2026-07-13T16:59:50Z",
-                  "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29268503211",
-                  "head_branch": "main",
-                  "event": "workflow_dispatch",
-                  "actor": "github-actions[bot]",
-                  "duration_seconds": 156
                 }
               ]
             },
@@ -432,7 +432,7 @@
               "workflow": "cro.yml",
               "repo": "ldomen-png/alfred-cmo-agente",
               "cron_human": "L-V 9:00 CDMX",
-              "estado": "fresco-exitoso",
+              "estado": "exitoso",
               "last_run": {
                 "id": 29595954197,
                 "run_number": 69,
@@ -721,13 +721,13 @@
           "cron_human": "Cada 15 minutos",
           "estado": "trabajando",
           "last_run": {
-            "id": 29597864154,
-            "run_number": 576,
+            "id": 29602966021,
+            "run_number": 577,
             "status": "in_progress",
             "conclusion": null,
-            "created_at": "2026-07-17T16:52:30Z",
-            "updated_at": "2026-07-17T16:52:33Z",
-            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29597864154",
+            "created_at": "2026-07-17T18:12:35Z",
+            "updated_at": "2026-07-17T18:12:38Z",
+            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29602966021",
             "head_branch": "main",
             "event": "schedule",
             "actor": "ldomen-png",
@@ -735,17 +735,30 @@
           },
           "latest_runs": [
             {
-              "id": 29597864154,
-              "run_number": 576,
+              "id": 29602966021,
+              "run_number": 577,
               "status": "in_progress",
               "conclusion": null,
-              "created_at": "2026-07-17T16:52:30Z",
-              "updated_at": "2026-07-17T16:52:33Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29597864154",
+              "created_at": "2026-07-17T18:12:35Z",
+              "updated_at": "2026-07-17T18:12:38Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29602966021",
               "head_branch": "main",
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": null
+            },
+            {
+              "id": 29597864154,
+              "run_number": 576,
+              "status": "completed",
+              "conclusion": "success",
+              "created_at": "2026-07-17T16:52:30Z",
+              "updated_at": "2026-07-17T16:52:55Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29597864154",
+              "head_branch": "main",
+              "event": "schedule",
+              "actor": "ldomen-png",
+              "duration_seconds": 25
             },
             {
               "id": 29593436426,
@@ -785,19 +798,6 @@
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": 44
-            },
-            {
-              "id": 29575290915,
-              "run_number": 572,
-              "status": "completed",
-              "conclusion": "success",
-              "created_at": "2026-07-17T10:58:58Z",
-              "updated_at": "2026-07-17T10:59:18Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29575290915",
-              "head_branch": "main",
-              "event": "schedule",
-              "actor": "ldomen-png",
-              "duration_seconds": 20
             }
           ]
         },
@@ -811,19 +811,32 @@
           "cron_human": "L-V 14:30-17:00 UTC (cada 30min)",
           "estado": "fresco-exitoso",
           "last_run": {
-            "id": 29596650118,
-            "run_number": 119,
+            "id": 29601137946,
+            "run_number": 120,
             "status": "completed",
             "conclusion": "success",
-            "created_at": "2026-07-17T16:33:51Z",
-            "updated_at": "2026-07-17T16:33:58Z",
-            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29596650118",
+            "created_at": "2026-07-17T17:43:28Z",
+            "updated_at": "2026-07-17T17:43:39Z",
+            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29601137946",
             "head_branch": "main",
             "event": "schedule",
             "actor": "ldomen-png",
-            "duration_seconds": 7
+            "duration_seconds": 11
           },
           "latest_runs": [
+            {
+              "id": 29601137946,
+              "run_number": 120,
+              "status": "completed",
+              "conclusion": "success",
+              "created_at": "2026-07-17T17:43:28Z",
+              "updated_at": "2026-07-17T17:43:39Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29601137946",
+              "head_branch": "main",
+              "event": "schedule",
+              "actor": "ldomen-png",
+              "duration_seconds": 11
+            },
             {
               "id": 29596650118,
               "run_number": 119,
@@ -875,19 +888,6 @@
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": 11
-            },
-            {
-              "id": 29513687002,
-              "run_number": 115,
-              "status": "completed",
-              "conclusion": "success",
-              "created_at": "2026-07-16T16:00:15Z",
-              "updated_at": "2026-07-16T16:00:27Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/29513687002",
-              "head_branch": "main",
-              "event": "schedule",
-              "actor": "ldomen-png",
-              "duration_seconds": 12
             }
           ]
         }
@@ -907,19 +907,19 @@
       "vertical": "solar",
       "etapa_funnel": "TOFU",
       "template_visual": "standard",
-      "copy_preview": "[PROMPT PARA IMAGEN]\nFotografía de un ticket de gasolina arrugado y una nota de restaurante sobre el tablero de una camioneta de trabajo. A través del parabrisas se ve, desenfocado, un paisaje de carretera al atardecer con siluetas de paneles solares a lo lejos. Estilo corporativ",
+      "copy_preview": "El costo real de un instalador solar en campo no está en su sueldo, está en los tickets de viáticos que no se facturan.\n\nCada gasto en carretera —gasolina, comidas, herramientas de último minuto— que no se convierte en un CFDI es una fuga directa de utilidad para tu empresa.\n\nEl ",
       "headline_imagen": "Tu instalador gasta. Tu empresa paga doble.",
       "imagen_url": "https://raw.githubusercontent.com/ldomen-png/alfred-cmo-imagenes/main/imagenes/2026-06-15-1-slide-1.png",
       "rechazo_motivo": null,
       "degradado_por": null,
       "degradado_motivo": null,
       "clasificador": {
-        "evaluado_en": "2026-07-16T17:43:32.628Z",
+        "evaluado_en": "2026-07-17T17:34:47.188Z",
         "modo": "activo",
         "auto_aprobable": false,
         "blocking_count": 1,
-        "warning_count": 1,
-        "razon": "[BLOCK] formato_falta_prompt_imagen: Pieza para IG/FB no tiene prompt_imagen para generar fondo. | [warn] tono_caps: 3 palabras en ALL CAPS no-sigla: PROMPT, PARA, IMAGEN"
+        "warning_count": 0,
+        "razon": "[BLOCK] formato_falta_prompt_imagen: Pieza para IG/FB no tiene prompt_imagen para generar fondo."
       }
     },
     {
@@ -933,14 +933,14 @@
       "vertical": "telecom",
       "etapa_funnel": "TOFU",
       "template_visual": null,
-      "copy_preview": "Tu técnico de campo, en una carretera remota, carga gasolina. Toma la foto del ticket con su celular. Ahí empieza el problema.\n\nEse ticket no tiene QR ni portal. Para facturarlo, hay que llamar por teléfono. Tu técnico, con razón, no lo hará. Tu software de gastos lo descartará. ",
+      "copy_preview": "[Imagen: Un técnico de campo, con su camioneta de servicio en una gasolinera remota, mira con frustración un ticket de papel en su mano. La luz es del atardecer.]\n\nTu técnico de campo, en una carretera remota, carga gasolina. Toma la foto del ticket con su celular. Ahí empieza el",
       "headline_imagen": "Este ticket nunca llegará a tu ERP.",
       "imagen_url": "https://raw.githubusercontent.com/ldomen-png/alfred-cmo-imagenes/main/imagenes/2026-06-29-1-slide-1.png",
       "rechazo_motivo": null,
       "degradado_por": null,
       "degradado_motivo": null,
       "clasificador": {
-        "evaluado_en": "2026-07-16T17:43:59.568Z",
+        "evaluado_en": "2026-07-17T17:35:35.510Z",
         "modo": "activo",
         "auto_aprobable": false,
         "blocking_count": 1,
@@ -966,7 +966,7 @@
       "degradado_por": null,
       "degradado_motivo": null,
       "clasificador": {
-        "evaluado_en": "2026-07-16T17:45:11.241Z",
+        "evaluado_en": "2026-07-17T17:35:56.945Z",
         "modo": "activo",
         "auto_aprobable": false,
         "blocking_count": 1,
