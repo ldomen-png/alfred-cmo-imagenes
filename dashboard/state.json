@@ -1,6 +1,6 @@
 {
   "repo": "ldomen-png/alfred-cmo-agente",
-  "generated_at": "2026-07-25T18:12:37.714Z",
+  "generated_at": "2026-07-25T19:37:07.030Z",
   "equipos": [
     {
       "grupo": "marketing",
@@ -721,13 +721,13 @@
           "cron_human": "Cada 15 minutos",
           "estado": "trabajando",
           "last_run": {
-            "id": 30169159654,
-            "run_number": 690,
+            "id": 30171953084,
+            "run_number": 691,
             "status": "in_progress",
             "conclusion": null,
-            "created_at": "2026-07-25T18:12:18Z",
-            "updated_at": "2026-07-25T18:12:21Z",
-            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/30169159654",
+            "created_at": "2026-07-25T19:36:48Z",
+            "updated_at": "2026-07-25T19:36:51Z",
+            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/30171953084",
             "head_branch": "main",
             "event": "schedule",
             "actor": "ldomen-png",
@@ -735,17 +735,30 @@
           },
           "latest_runs": [
             {
-              "id": 30169159654,
-              "run_number": 690,
+              "id": 30171953084,
+              "run_number": 691,
               "status": "in_progress",
               "conclusion": null,
-              "created_at": "2026-07-25T18:12:18Z",
-              "updated_at": "2026-07-25T18:12:21Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/30169159654",
+              "created_at": "2026-07-25T19:36:48Z",
+              "updated_at": "2026-07-25T19:36:51Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/30171953084",
               "head_branch": "main",
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": null
+            },
+            {
+              "id": 30169159654,
+              "run_number": 690,
+              "status": "completed",
+              "conclusion": "success",
+              "created_at": "2026-07-25T18:12:18Z",
+              "updated_at": "2026-07-25T18:12:42Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/30169159654",
+              "head_branch": "main",
+              "event": "schedule",
+              "actor": "ldomen-png",
+              "duration_seconds": 24
             },
             {
               "id": 30167349605,
@@ -785,19 +798,6 @@
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": 24
-            },
-            {
-              "id": 30160613304,
-              "run_number": 686,
-              "status": "completed",
-              "conclusion": "success",
-              "created_at": "2026-07-25T13:54:20Z",
-              "updated_at": "2026-07-25T13:54:45Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/30160613304",
-              "head_branch": "main",
-              "event": "schedule",
-              "actor": "ldomen-png",
-              "duration_seconds": 25
             }
           ]
         },
@@ -809,7 +809,7 @@
           "repo": "ldomen-png/alfred-cmo-agente",
           "descripcion": "Supervisa que Jeeves y Hudson hayan corrido cada mañana. Si GitHub Actions se duerme y no dispara los crons, este los levanta manualmente y avisa por Slack.",
           "cron_human": "L-V 14:30-17:00 UTC (cada 30min)",
-          "estado": "exitoso",
+          "estado": "descansando",
           "last_run": {
             "id": 30118064978,
             "run_number": 136,
