@@ -1,6 +1,6 @@
 {
   "repo": "ldomen-png/alfred-cmo-agente",
-  "generated_at": "2026-08-17T23:53:24.093Z",
+  "generated_at": "2026-08-18T01:44:28.509Z",
   "equipos": [
     {
       "grupo": "marketing",
@@ -325,7 +325,7 @@
               "descripcion": "Pulla likes, comentarios, alcance de Meta.",
               "repo": "ldomen-png/alfred-cmo-agente",
               "cron_human": "Diario 16:00 CDMX",
-              "estado": "fresco-exitoso",
+              "estado": "exitoso",
               "last_run": {
                 "id": 32078446196,
                 "run_number": 87,
@@ -520,7 +520,7 @@
               "workflow": "brief-cro-semanal.yml",
               "repo": "ldomen-png/alfred-cmo-agente",
               "cron_human": "Domingo 17:30 CDMX",
-              "estado": "exitoso",
+              "estado": "descansando",
               "last_run": {
                 "id": 31980500728,
                 "run_number": 13,
@@ -605,7 +605,7 @@
           ],
           "subagentes": [],
           "herramientas": [],
-          "estado_general": "exitoso"
+          "estado_general": "descansando"
         }
       ],
       "herramientas_sueltas": []
@@ -721,13 +721,13 @@
           "cron_human": "Cada 15 minutos",
           "estado": "trabajando",
           "last_run": {
-            "id": 32082288808,
-            "run_number": 1151,
+            "id": 32089271791,
+            "run_number": 1152,
             "status": "in_progress",
             "conclusion": null,
-            "created_at": "2026-08-17T23:52:57Z",
-            "updated_at": "2026-08-17T23:53:00Z",
-            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/32082288808",
+            "created_at": "2026-08-18T01:44:07Z",
+            "updated_at": "2026-08-18T01:44:12Z",
+            "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/32089271791",
             "head_branch": "main",
             "event": "schedule",
             "actor": "ldomen-png",
@@ -735,17 +735,30 @@
           },
           "latest_runs": [
             {
-              "id": 32082288808,
-              "run_number": 1151,
+              "id": 32089271791,
+              "run_number": 1152,
               "status": "in_progress",
               "conclusion": null,
-              "created_at": "2026-08-17T23:52:57Z",
-              "updated_at": "2026-08-17T23:53:00Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/32082288808",
+              "created_at": "2026-08-18T01:44:07Z",
+              "updated_at": "2026-08-18T01:44:12Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/32089271791",
               "head_branch": "main",
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": null
+            },
+            {
+              "id": 32082288808,
+              "run_number": 1151,
+              "status": "completed",
+              "conclusion": "success",
+              "created_at": "2026-08-17T23:52:57Z",
+              "updated_at": "2026-08-17T23:53:28Z",
+              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/32082288808",
+              "head_branch": "main",
+              "event": "schedule",
+              "actor": "ldomen-png",
+              "duration_seconds": 31
             },
             {
               "id": 32080798874,
@@ -785,19 +798,6 @@
               "event": "schedule",
               "actor": "ldomen-png",
               "duration_seconds": 32
-            },
-            {
-              "id": 32074070154,
-              "run_number": 1147,
-              "status": "completed",
-              "conclusion": "success",
-              "created_at": "2026-08-17T22:01:44Z",
-              "updated_at": "2026-08-17T22:02:04Z",
-              "html_url": "https://github.com/ldomen-png/alfred-cmo-agente/actions/runs/32074070154",
-              "head_branch": "main",
-              "event": "schedule",
-              "actor": "ldomen-png",
-              "duration_seconds": 20
             }
           ]
         },
